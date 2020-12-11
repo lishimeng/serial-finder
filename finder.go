@@ -8,11 +8,7 @@ import (
 
 import "go.bug.st/serial/enumerator"
 
-type Finder interface {
-	Find()(ports []string, err error)
-	Monitor(config MonitorConfig)
-	Remove(name string)
-}
+
 
 type Uart struct {
 	Name string
@@ -25,6 +21,12 @@ type MonitorConfig struct {
 	Ctx context.Context
 	Delay time.Duration
 	Build func(name string) (interface{}, error)
+}
+
+type Finder interface {
+	Find()(ports []Uart, err error)
+	Monitor(config MonitorConfig)
+	Remove(name string)
 }
 
 type finder struct {
@@ -99,18 +101,18 @@ func (f *finder) monitor() {
 	}
 
 	for _, port := range ports {
-		if _, ok := f.store[port]; ok { // skip
+		if _, ok := f.store[port.Name]; ok { // skip
 			continue
 		}
-		elem, exp := f.config.Build(port)
+		elem, exp := f.config.Build(port.Name)
 		if exp == nil {
-			f.store[port] = elem
-			f.storeStatus[port] = true
+			f.store[port.Name] = elem
+			f.storeStatus[port.Name] = true
 		}
 	}
 }
 
-func (f *finder) Find() (ports []string, err error) {
+func (f *finder) Find() (ports []Uart, err error) {
 
 	list, err := serialPorts()
 	if err != nil {
@@ -118,7 +120,7 @@ func (f *finder) Find() (ports []string, err error) {
 	}
 	for _, uart := range list {
 		if f.hit(uart) {
-			ports = append(ports, uart.Name)
+			ports = append(ports, uart)
 		}
 	}
 	return
