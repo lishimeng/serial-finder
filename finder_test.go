@@ -7,8 +7,9 @@ import (
 )
 
 var stub Finder
+
 func TestFinder_Find(t *testing.T) {
-	stub = New(FT2x)
+	stub = New(CP2x)
 	ports, err := stub.Find()
 	if err != nil {
 		t.Fatal(err)
@@ -25,7 +26,7 @@ func TestFinder_Monitor(t *testing.T) {
 	stub = New(FT2x)
 	(stub).Monitor(MonitorConfig{
 		Ctx:   ctx,
-		Delay: time.Second*2,
+		Delay: time.Second * 2,
 		Build: func(name string) (i interface{}, err error) {
 			i = name + "_ppp"
 			t.Logf("create element:%s", i)
@@ -48,7 +49,7 @@ func TestFinder_Remove(t *testing.T) {
 	stub = New(FT2x)
 	(stub).Monitor(MonitorConfig{
 		Ctx:   ctx,
-		Delay: time.Second*2,
+		Delay: time.Second * 2,
 		Build: func(name string) (i interface{}, err error) {
 			lastName = name
 			i = name + "_ppp"
